@@ -2,175 +2,356 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#07110d">
-<title>SnapKnow AI</title>
-<style>
-:root{color-scheme:dark;--green:#70f0a0;--bg:#07110d;--panel:#101d17}
-*{box-sizing:border-box}
-body{margin:0;background:radial-gradient(ellipse at top,#173a28,var(--bg) 60%);color:#f3fff6;font:16px system-ui,sans-serif;min-height:100vh}
-header{padding:22px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #284535}
-.logo{font-size:23px;font-weight:850;letter-spacing:-1px}
-.logo span{color:var(--green)}
-.tag{font-size:11px;color:var(--green);border:1px solid #356747;padding:6px 9px;border-radius:20px}
-main{width:min(680px,100%);margin:auto;padding:25px 17px 45px}
-h1{font-size:clamp(32px,8vw,48px);line-height:1.05;letter-spacing:-2px;margin:12px 0}
-h1 span{color:var(--green)}
-.muted{color:#a6b9ad;line-height:1.6}
-.upload{display:block;border:1px dashed #548568;background:#102219;border-radius:20px;padding:25px 16px;text-align:center;margin:23px 0;cursor:pointer}
-.upload strong{display:block;font-size:18px;margin:9px}
-.upload input{display:none}
-#preview{width:100%;max-height:340px;object-fit:contain;border-radius:14px;margin-top:15px;display:none}
-button{border:0;cursor:pointer;font:inherit;font-weight:700;border-radius:12px;padding:13px 16px}
-.primary{background:var(--green);color:#082013;width:100%}
-.secondary{background:#203329;color:#fff}
-button:disabled{opacity:.5;cursor:wait}
-.panel{background:var(--panel);border:1px solid #263d2e;border-radius:18px;padding:18px;margin-top:17px}
-.row{display:flex;gap:9px;align-items:center}
-.row button{flex-shrink:0}
-input[type=text]{min-width:0;width:100%;background:#07110d;color:white;border:1px solid #355342;border-radius:11px;padding:13px;font:inherit}
-#result{white-space:pre-wrap;line-height:1.75;overflow-wrap:anywhere}
-#status{font-size:13px;color:var(--green);margin-top:12px}
-.small{font-size:12px;color:#91a699}
-footer{text-align:center;padding:15px;color:#91a699;font-size:12px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07110d">
+  <title>SnapKnow AI — Discover Anything</title>
+  <style>
+    :root {
+      --bg: #07110d;
+      --card: #101d17;
+      --green: #75f5a5;
+      --muted: #9eb3a5;
+      --border: #294334;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: #f4fff7;
+      background:
+        radial-gradient(ellipse at 50% -10%, #205237 0%, transparent 55%),
+        var(--bg);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    header {
+      max-width: 760px;
+      margin: auto;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo { font-size: 23px; font-weight: 850; letter-spacing: -1px; }
+    .logo span, h1 span { color: var(--green); }
+
+    .pill {
+      color: var(--green);
+      border: 1px solid #39684b;
+      border-radius: 30px;
+      padding: 7px 10px;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    main { max-width: 680px; margin: auto; padding: 30px 18px 50px; }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 2px;
+    }
+
+    h1 {
+      font-size: clamp(38px, 9vw, 58px);
+      line-height: 1.02;
+      letter-spacing: -2.5px;
+      margin: 15px 0;
+    }
+
+    .muted { color: var(--muted); line-height: 1.7; }
+
+    .card {
+      background: rgba(16, 29, 23, .94);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .upload {
+      min-height: 190px;
+      border: 1px dashed #538364;
+      background: #0b1911;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    .camera { font-size: 43px; }
+    .upload strong { margin: 10px 0 5px; font-size: 17px; }
+    .small { color: var(--muted); font-size: 12px; line-height: 1.6; }
+    #photo { display: none; }
+
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 320px;
+      object-fit: contain;
+      border-radius: 12px;
+      margin-top: 15px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-weight: 750;
+    }
+
+    .primary {
+      width: 100%;
+      margin-top: 15px;
+      color: #071b0e;
+      background: var(--green);
+    }
+
+    .secondary { color: white; background: #263d2e; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+
+    #status { color: var(--green); font-size: 13px; margin-top: 13px; }
+
+    #answerPanel[hidden] { display: none; }
+
+    .answerHeading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    #result {
+      margin-top: 18px;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .questionRow { display: flex; gap: 9px; margin-top: 15px; }
+
+    #question {
+      flex: 1;
+      min-width: 0;
+      background: #07110d;
+      color: white;
+      border: 1px solid #385543;
+      border-radius: 11px;
+      padding: 13px;
+      outline-color: var(--green);
+    }
+
+    footer {
+      text-align: center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 28px 0 5px;
+    }
+
+    @media (max-width: 380px) {
+      .pill { font-size: 9px; }
+      .card { padding: 15px; }
+      .questionRow { flex-wrap: wrap; }
+      #question { flex-basis: 100%; }
+    }
+  </style>
 </head>
 <body>
-<header>
-  <div class="logo">Snap<span>Know</span> AI</div>
-  <div class="tag">SEE · LEARN · DISCOVER</div>
-</header>
+  <header>
+    <div class="logo">Snap<span>Know</span> AI</div>
+    <div class="pill">SEE · LEARN · DISCOVER</div>
+  </header>
 
-<main>
-  <p class="muted">YOUR WORLD, EXPLAINED.</p>
-  <h1>Snap anything.<br><span>Know more.</span></h1>
-  <p class="muted">Take a picture of something and let AI help you understand what it is, how it works, and what makes it interesting.</p>
+  <main>
+    <p class="eyebrow">YOUR WORLD, EXPLAINED.</p>
+    <h1>Snap anything.<br><span>Know more.</span></h1>
+    <p class="muted">
+      Discover the story behind the things around you.
+      Take a photo and let AI explain what it sees, how it works,
+      and why it matters.
+    </p>
 
-  <section class="panel">
-    <label class="upload">
-      <div style="font-size:38px">📸</div>
-      <strong>Take a photo or choose one</strong>
-      <span class="small">Objects, plants, gadgets, art and more</span>
-      <input id="photo" type="file" accept="image/*" capture="environment">
-      <img id="preview" alt="Your selected photo">
-    </label>
-    <button id="analyze" class="primary" disabled>✦ Identify this</button>
-    <div id="status" role="status">Choose a picture to begin.</div>
-  </section>
+    <section class="card">
+      <label class="upload" for="photo">
+        <span class="camera">📸</span>
+        <strong>Take a photo or choose one</strong>
+        <span class="small">Objects · Plants · Gadgets · Art · Everyday life</span>
+        <input id="photo" type="file" accept="image/*" capture="environment">
+        <img id="preview" alt="Selected photo preview">
+      </label>
 
-  <section class="panel" id="answerPanel" hidden>
-    <div class="row" style="justify-content:space-between">
-      <strong>What I discovered</strong>
-      <button id="speak" class="secondary">🔊 Listen</button>
-    </div>
-    <div id="result" style="margin-top:16px"></div>
-    <p class="small">AI can make mistakes. Check important information.</p>
-  </section>
+      <button id="analyze" class="primary" disabled>
+        ✦ Identify this
+      </button>
+      <div id="status" role="status" aria-live="polite">
+        Choose a picture to get started.
+      </div>
+    </section>
 
-  <section class="panel">
-    <strong>💬 Ask a follow-up question</strong>
-    <p class="muted" style="font-size:14px">First analyze a picture, then ask something specific about it.</p>
-    <form id="questionForm" class="row">
-      <input id="question" type="text" placeholder="How does it work?" maxlength="500" required>
-      <button class="secondary" type="submit">Ask</button>
-    </form>
-  </section>
-  <footer>SnapKnow AI · Curiosity starts with a picture.</footer>
-</main>
+    <section class="card" id="answerPanel" hidden>
+      <div class="answerHeading">
+        <strong>✦ What I discovered</strong>
+        <button id="speak" class="secondary">🔊 Listen</button>
+      </div>
+      <div id="result"></div>
+      <p class="small">AI can make mistakes. Verify important information.</p>
+    </section>
 
-<script>
-const photo = document.getElementById("photo");
-const preview = document.getElementById("preview");
-const analyze = document.getElementById("analyze");
-const statusBox = document.getElementById("status");
-const answerPanel = document.getElementById("answerPanel");
-const result = document.getElementById("result");
-const questionForm = document.getElementById("questionForm");
-let imageData = "";
-let answerText = "";
-let busy = false;
+    <section class="card">
+      <strong>💬 Ask a follow-up</strong>
+      <p class="muted">Ask another question about your picture.</p>
+      <form id="questionForm" class="questionRow">
+        <input id="question" type="text" maxlength="500"
+          placeholder="How does it work?" required>
+        <button class="secondary" type="submit">Ask ↗</button>
+      </form>
+    </section>
 
-function status(message){statusBox.textContent=message;}
+    <footer>SnapKnow AI · Curiosity starts with a picture.</footer>
+  </main>
 
-photo.addEventListener("change",()=>{
-  const file=photo.files?.[0];
-  if(!file)return;
-  if(!file.type.startsWith("image/")){
-    status("Please choose an image.");
-    return;
-  }
-  if(file.size>8*1024*1024){
-    photo.value="";
-    status("That image is too large. Choose one under 8 MB.");
-    return;
-  }
-  const reader=new FileReader();
-  reader.onload=()=>{
-    imageData=reader.result;
-    preview.src=imageData;
-    preview.style.display="block";
-    analyze.disabled=false;
-    answerPanel.hidden=true;
-    answerText="";
-    status("Photo ready. Tap Identify this.");
-  };
-  reader.readAsDataURL(file);
-});
+  <script>
+    const photo = document.getElementById("photo");
+    const preview = document.getElementById("preview");
+    const analyze = document.getElementById("analyze");
+    const statusBox = document.getElementById("status");
+    const answerPanel = document.getElementById("answerPanel");
+    const result = document.getElementById("result");
+    const question = document.getElementById("question");
 
-async function askAI(question){
-  if(!imageData){status("Choose a picture first.");return;}
-  if(busy)return;
-  busy=true;
-  analyze.disabled=true;
-  status("AI is examining your picture...");
-  try{
-    const response=await fetch("/api/analyze",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({image:imageData,question})
+    let imageData = "";
+    let answerText = "";
+    let busy = false;
+
+    function setStatus(message) {
+      statusBox.textContent = message;
+    }
+
+    photo.addEventListener("change", () => {
+      const file = photo.files && photo.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        setStatus("Please select an image.");
+        return;
+      }
+
+      if (file.size > 8 * 1024 * 1024) {
+        photo.value = "";
+        setStatus("Image too large. Please choose one under 8 MB.");
+        return;
+      }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        imageData = reader.result;
+        preview.src = imageData;
+        preview.style.display = "block";
+        analyze.disabled = false;
+        answerPanel.hidden = true;
+        answerText = "";
+        setStatus("Photo ready. Tap Identify this.");
+      };
+
+      reader.onerror = () => setStatus("Could not read that image. Try again.");
+      reader.readAsDataURL(file);
     });
-    const data=await response.json();
-    if(!response.ok)throw new Error(data.error||"Request failed.");
-    answerText=data.answer;
-    result.textContent=answerText;
-    answerPanel.hidden=false;
-    status("Your answer is ready.");
-  }catch(error){
-    status(error.message||"Something went wrong. Try again.");
-  }finally{
-    busy=false;
-    analyze.disabled=!imageData;
-  }
-}
 
-analyze.addEventListener("click",()=>askAI(
-  "Identify the main subject in this picture. Explain what it is, its visible features, uses, how it works if relevant, and interesting facts. Organize the answer with short headings. If uncertain, say so. Do not invent details that cannot be verified from the picture."
-));
+    async function askAI(prompt) {
+      if (!imageData) {
+        setStatus("Choose a picture first.");
+        return;
+      }
 
-questionForm.addEventListener("submit",async event=>{
-  event.preventDefault();
-  const question=document.getElementById("question").value.trim();
-  if(!question)return;
-  if(!answerText){
-    status("Identify a picture before asking follow-up questions.");
-    return;
-  }
-  await askAI(question);
-});
+      if (busy) return;
 
-document.getElementById("speak").addEventListener("click",()=>{
-  if(!answerText)return;
-  if(!("speechSynthesis" in window)){
-    status("Voice playback is not supported in this browser.");
-    return;
-  }
-  window.speechSynthesis.cancel();
-  const speech=new SpeechSynthesisUtterance(answerText);
-  speech.lang="en-US";
-  speech.rate=0.95;
-  window.speechSynthesis.speak(speech);
-});
-</script>
+      busy = true;
+      analyze.disabled = true;
+      setStatus("Examining your picture...");
+
+      try {
+        const response = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            image: imageData,
+            question: prompt,
+            previousAnswer: answerText
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "AI request failed.");
+        }
+
+        if (!data.answer) {
+          throw new Error("The AI returned an empty answer. Try again.");
+        }
+
+        answerText = data.answer;
+        result.textContent = answerText;
+        answerPanel.hidden = false;
+        setStatus("Your answer is ready.");
+      } catch (error) {
+        setStatus(error.message || "Something went wrong. Try again.");
+      } finally {
+        busy = false;
+        analyze.disabled = !imageData;
+      }
+    }
+
+    analyze.addEventListener("click", () => {
+      askAI(
+        "Identify the main subject in this image. Explain what it is, " +
+        "its visible features, uses, how it works when relevant, and " +
+        "interesting facts. Use short headings. If uncertain, say so. " +
+        "Do not invent details that cannot be verified from the image."
+      );
+    });
+
+    document.getElementById("questionForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      if (!answerText) {
+        setStatus("Identify a picture before asking a follow-up.");
+        return;
+      }
+
+      const prompt = question.value.trim();
+      if (prompt) askAI(prompt);
+    });
+
+    document.getElementById("speak").addEventListener("click", () => {
+      if (!answerText) return;
+
+      if (!("speechSynthesis" in window)) {
+        setStatus("Voice playback is not supported in this browser.");
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+
+      const speech = new SpeechSynthesisUtterance(answerText);
+      speech.lang = "en-US";
+      speech.rate = 0.95;
+      window.speechSynthesis.speak(speech);
+    });
+  </script>
 </body>
 </html>
